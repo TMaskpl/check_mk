@@ -1,7 +1,6 @@
 $FIRMA = "JUSTMAR"
 $MAIL = "biuro@tmask.pl"
 $SEM = "services.sem"
-# $SLACK = "https://hooks.slack.com/services/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"
 $SLACKCH = "softera"
 $D = $(Get-Date -Format "dddd MM/dd/yyyy HH:mm")
 
