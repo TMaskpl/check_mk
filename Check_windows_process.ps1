@@ -1,26 +1,41 @@
-$FIRMA = "JUSTMAR"
-$MAIL = "biuro@tmask.pl"
-$SEM = "services.sem"
-$SLACKCH = "softera"
 $D = $(Get-Date -Format "dddd MM/dd/yyyy HH:mm")
+$E = "C:\ProgramData\checkmk\agent\local\error_services.txt"
+$S = "C:\ProgramData\checkmk\agent\local\services.txt"
 
+if (Test-Path $E ){    
+    Remove-Item $E
+    }
 
-$list = get-content "services.txt"
+$list = get-content $S
 
 foreach ($service in $list) {
 
-if ((Get-Service -Name $service).Status -EQ "Running") {
+if ((Get-Service -Name $service -erroraction 'silentlycontinue').Status -EQ "Running") {
 
-    Write-Host "0 ""Check Production Service"" - OK Service $service running"
+    continue
 }
 
 else {
 
-    Write-Host "2 ""Check Production Service"" - ERROR Service $service not running"
-    # curl -X POST --data-urlencode "payload={\"channel\": \"#$SLACKCH\", \"username\": \"$FIRMA \", \"text\": \"ERROR service - $s \", \"icon_emoji\": \":red_circle:\"}" $SLACK
-    Write-EventLog -LogName "Application" -Source "TMaskPL" -EventID 3001 -EntryType Error -Message "$D - ERROR Service $service not running" -Category 1 -RawData 10,20
+    echo $service > $E
+
+    }
+}
+
+if (Test-Path $E) {    
+    $s = $(cat $E)
+    #echo $s
+    }
+
+
+if (!(Test-Path $E)) {
+    
+    Write-Host 0 '"Check Service"' - Service running OK
+
+    }
+else {
+
+    Write-Host 2 '"Check Service"' - Service $s not running ERROR
     exit 1
 
     }
-
-}
